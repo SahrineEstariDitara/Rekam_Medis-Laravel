@@ -1,0 +1,94 @@
+@extends('layouts.app')
+
+@section('title', 'Buat Rekam Medis')
+
+@section('content')
+<div class="mb-4">
+    <h2><i class="bi bi-file-medical-fill"></i> Buat Rekam Medis Baru</h2>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        <form action="{{ route('dokter.rekam-medis.store') }}" method="POST">
+            @csrf
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="pasien_id" class="form-label">Pilih Pasien <span class="text-danger">*</span></label>
+                        <select class="form-select @error('pasien_id') is-invalid @enderror" 
+                                id="pasien_id" name="pasien_id" required>
+                            <option value="">-- Pilih Pasien --</option>
+                            @foreach($pasien as $p)
+                                <option value="{{ $p->id }}" {{ old('pasien_id') == $p->id ? 'selected' : '' }}>
+                                    {{ $p->no_rm }} - {{ $p->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('pasien_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="tanggal_periksa" class="form-label">Tanggal Periksa <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control @error('tanggal_periksa') is-invalid @enderror" 
+                               id="tanggal_periksa" name="tanggal_periksa" 
+                               value="{{ old('tanggal_periksa', date('Y-m-d')) }}" required>
+                        @error('tanggal_periksa')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="keluhan" class="form-label">Keluhan <span class="text-danger">*</span></label>
+                <textarea class="form-control @error('keluhan') is-invalid @enderror" 
+                          id="keluhan" name="keluhan" rows="3" required>{{ old('keluhan') }}</textarea>
+                @error('keluhan')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="mb-3">
+                <label for="diagnosa" class="form-label">Diagnosa <span class="text-danger">*</span></label>
+                <textarea class="form-control @error('diagnosa') is-invalid @enderror" 
+                          id="diagnosa" name="diagnosa" rows="3" required>{{ old('diagnosa') }}</textarea>
+                @error('diagnosa')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="mb-3">
+                <label for="tindakan" class="form-label">Tindakan <span class="text-danger">*</span></label>
+                <textarea class="form-control @error('tindakan') is-invalid @enderror" 
+                          id="tindakan" name="tindakan" rows="3" required>{{ old('tindakan') }}</textarea>
+                @error('tindakan')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="mb-3">
+                <label for="catatan" class="form-label">Catatan</label>
+                <textarea class="form-control @error('catatan') is-invalid @enderror" 
+                          id="catatan" name="catatan" rows="2">{{ old('catatan') }}</textarea>
+                @error('catatan')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Simpan
+                </button>
+                <a href="{{ route('dokter.rekam-medis.index') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
