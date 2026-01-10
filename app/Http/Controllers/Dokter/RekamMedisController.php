@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dokter;
 use App\Http\Controllers\Controller;
 use App\Models\RekamMedis;
 use App\Models\Pasien;
+use App\Models\Obat;
 use Illuminate\Http\Request;
 
 class RekamMedisController extends Controller
@@ -21,6 +22,7 @@ class RekamMedisController extends Controller
             ->latest('tanggal_periksa')
             ->paginate(20);
 
+        // PERBAIKAN: Arahkan ke folder yang benar
         return view('dokter.rekam-medis.index', compact('rekamMedis'));
     }
 
@@ -68,8 +70,14 @@ class RekamMedisController extends Controller
      */
     public function show(RekamMedis $rekamMedi)
     {
+        // Load relasi
         $rekamMedi->load(['pasien', 'dokter', 'resep.obat']);
-        return view('dokter.rekam-medis.show', compact('rekamMedi'));
+        
+        // AMBIL DATA OBAT UNTUK MODAL POPUP
+        $obats = Obat::all(); 
+
+        // Kirim $obats ke view menggunakan compact
+        return view('dokter.rekam-medis.show', compact('rekamMedi', 'obats'));
     }
 
     /**

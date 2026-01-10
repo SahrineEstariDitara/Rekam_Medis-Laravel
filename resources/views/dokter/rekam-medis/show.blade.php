@@ -9,7 +9,7 @@
         <a href="{{ route('dokter.rekam-medis.edit', $rekamMedi) }}" class="btn btn-warning">
             <i class="bi bi-pencil"></i> Edit
         </a>
-        <a href="{{ route('dokter.resep.create', $rekamMedi->id) }}" class="btn btn-success">
+       <a href="{{ route('dokter.resep.create', $rekamMedi->id) }}" class="btn btn-success">
             <i class="bi bi-plus-circle"></i> Tambah Resep
         </a>
     </div>
@@ -146,5 +146,47 @@
     <a href="{{ route('dokter.rekam-medis.index') }}" class="btn btn-secondary">
         <i class="bi bi-arrow-left"></i> Kembali
     </a>
+</div>
+
+<div class="modal fade" id="modalTambahResep" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalLabel">Tambah Resep Obat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form action="{{ route('dokter.resep.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="rekam_medis_id" value="{{ $rekamMedi->id }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nama Obat</label>
+                        <select name="obat_id" class="form-select" required>
+                            <option value="">-- Pilih Obat --</option>
+                            @foreach($obats as $obat)
+                                <option value="{{ $obat->id }}">{{ $obat->nama_obat }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Jumlah</label>
+                        <input type="number" name="jumlah" class="form-control" placeholder="Contoh: 10" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Aturan Pakai / Dosis</label>
+                        <textarea name="dosis" class="form-control" rows="3" placeholder="Contoh: 3x1 Sesudah makan" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection

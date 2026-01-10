@@ -11,57 +11,78 @@ use Illuminate\Http\Request;
 class ResepController extends Controller
 {
     /**
-     * Tambah resep untuk rekam medis
+     * Halaman Form Tambah Resep (Dikembalikan)
      */
     public function create($rekamMedisId)
     {
         $rekamMedis = RekamMedis::with('pasien')->findOrFail($rekamMedisId);
         
-        // Pastikan dokter hanya bisa menambah resep untuk rekam medis yang dia buat
+        // Cek otorisasi: Dokter hanya bisa tambah resep di rekam medis buatannya
         if ($rekamMedis->dokter_id !== auth()->user()->dokter->id) {
             abort(403, 'Anda tidak memiliki izin');
         }
 
+        // Ambil obat yang stoknya > 0
         $obat = Obat::where('stok', '>', 0)->get();
         
+        // Pastikan kamu punya file view ini: resources/views/dokter/resep/create.blade.php
         return view('dokter.resep.create', compact('rekamMedis', 'obat'));
     }
 
     /**
-     * Simpan resep
+     * Simpan Resep
      */
     public function store(Request $request)
     {
         $request->validate([
             'rekam_medis_id' => 'required|exists:rekam_medis,id',
-            'obat_id' => 'required|exists:obat,id',
-            'dosis' => 'required|string',
+            'obat_id'        => 'required|exists:obat,id',
+            'jumlah'         => 'required|integer|min:1',
+            'dosis'          => 'required|string',
         ]);
 
         $rekamMedis = RekamMedis::findOrFail($request->rekam_medis_id);
         
-        // Pastikan dokter hanya bisa menambah resep untuk rekam medis yang dia buat
         if ($rekamMedis->dokter_id !== auth()->user()->dokter->id) {
             abort(403, 'Anda tidak memiliki izin');
         }
 
-        Resep::create($request->all());
+        // Cek Stok
+        $obat = Obat::findOrFail($request->obat_id);
+        if ($obat->stok < $request->jumlah) {
+            return back()->withInput()->with('error', 'Stok obat tidak mencukupi! Sisa: ' . $obat->stok);
+        }
 
+        // Simpan
+        Resep::create([
+            'rekam_medis_id' => $request->rekam_medis_id,
+            'obat_id'        => $request->obat_id,
+            'jumlah'         => $request->jumlah,
+            'dosis'          => $request->dosis,
+        ]);
+
+        // Kurangi Stok
+        $obat->decrement('stok', $request->jumlah);
+
+        // Redirect kembali ke detail rekam medis
         return redirect()->route('dokter.rekam-medis.show', $rekamMedis)
             ->with('success', 'Resep berhasil ditambahkan');
     }
 
     /**
-     * Hapus resep
+     * Hapus Resep
      */
     public function destroy(Resep $resep)
     {
-        // Pastikan dokter hanya bisa hapus resep yang dia buat
         if ($resep->rekamMedis->dokter_id !== auth()->user()->dokter->id) {
             abort(403, 'Anda tidak memiliki izin');
         }
 
         $rekamMedisId = $resep->rekam_medis_id;
+        
+        // Balikin stok sebelum hapus
+        $resep->obat->increment('stok', $resep->jumlah);
+        
         $resep->delete();
 
         return redirect()->route('dokter.rekam-medis.show', $rekamMedisId)
