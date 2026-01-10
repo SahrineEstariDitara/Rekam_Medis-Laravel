@@ -1,4 +1,4 @@
-<nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+<nav class="sidebar">
     <div class="sidebar-sticky">
         <ul class="nav flex-column">
             @if(auth()->user()->role === 'admin')
@@ -12,19 +12,25 @@
                         <i class="bi bi-people"></i> Kelola User
                     </a>
                 </li>
+            @elseif(auth()->user()->role === 'staff')
                 <li class="nav-item">
-                    <a class="nav-link {{ Request::is('admin/rekam-medis*') ? 'active' : '' }}" href="{{ route('admin.rekam-medis.index') }}">
+                    <a class="nav-link {{ Request::is('staff/dashboard') ? 'active' : '' }}" href="{{ route('staff.dashboard') }}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::is('staff/pasien*') ? 'active' : '' }}" href="{{ route('staff.pasien.index') }}">
+                        <i class="bi bi-people-fill"></i> Data Pasien
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::is('staff/rekam-medis*') ? 'active' : '' }}" href="{{ route('staff.rekam-medis.index') }}">
                         <i class="bi bi-file-medical"></i> Rekam Medis
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ Request::is('master/obat*') ? 'active' : '' }}" href="{{ route('master.obat.index') }}">
+                    <a class="nav-link {{ Request::is('staff/obat*') ? 'active' : '' }}" href="{{ route('staff.obat.index') }}">
                         <i class="bi bi-capsule"></i> Data Obat
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is('admin/laporan*') ? 'active' : '' }}" href="{{ route('admin.laporan.index') }}">
-                        <i class="bi bi-graph-up"></i> Laporan
                     </a>
                 </li>
             @elseif(auth()->user()->role === 'dokter')
@@ -68,3 +74,5 @@
         </ul>
     </div>
 </nav>
+
+

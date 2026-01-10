@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Models\RekamMedis;
@@ -16,7 +16,7 @@ class LaporanController extends Controller
      */
     public function index()
     {
-        return view('admin.laporan.index');
+        return view('staff.laporan.index');
     }
 
     /**
@@ -52,7 +52,7 @@ class LaporanController extends Controller
                 $request->tanggal_akhir
             ])->count();
 
-        return view('admin.laporan.statistik', compact(
+        return view('staff.laporan.statistik', compact(
             'kunjunganPerHari',
             'kunjunganPerDokter',
             'totalKunjungan'

@@ -32,11 +32,13 @@ class DokterSeeder extends Seeder
             $user = User::where('email', $dokterData['email'])->first();
             
             if ($user) {
-                Dokter::create([
-                    'user_id' => $user->id,
-                    'nama' => $dokterData['nama'],
-                    'spesialis' => $dokterData['spesialis'],
-                ]);
+                Dokter::firstOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'nama' => $dokterData['nama'],
+                        'spesialis' => $dokterData['spesialis'],
+                    ]
+                );
             }
         }
     }

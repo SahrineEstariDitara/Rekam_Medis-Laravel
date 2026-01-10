@@ -40,4 +40,22 @@ class RekamMedisController extends Controller
         // PERBAIKAN: Ubah 'rekamMedis' menjadi 'rekamMedi'
         return view('pasien.rekam-medis.show', compact('rekamMedi'));
     }
+
+    /**
+     * Download rekam medis PDF
+     */
+    public function download(RekamMedis $rekamMedi)
+    {
+        $pasien = auth()->user()->pasien;
+        
+        // Pastikan pasien hanya bisa mengunduh rekam medis miliknya sendiri
+        if ($rekamMedi->pasien_id !== $pasien->id) {
+            abort(403, 'Anda tidak memiliki izin untuk mengunduh rekam medis ini');
+        }
+
+        $rekamMedi->load(['dokter', 'resep.obat']);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pasien.rekam-medis.pdf', compact('rekamMedi'));
+        return $pdf->download('rekam-medis-' . $rekamMedi->tanggal_periksa->format('Y-m-d') . '.pdf');
+    }
 }

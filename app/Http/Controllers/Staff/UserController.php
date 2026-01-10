@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -17,12 +17,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $admins = User::where('role', 'admin')->latest()->get();
-        $staffs = User::where('role', 'staff')->latest()->get();
-        $dokters = User::with('dokter')->where('role', 'dokter')->latest()->get();
-        $pasiens = User::with('pasien')->where('role', 'pasien')->latest()->get();
-        
-        return view('admin.users.index', compact('admins', 'staffs', 'dokters', 'pasiens'));
+        $users = User::with(['pasien', 'dokter'])->latest()->get();
+        return view('staff.users.index', compact('users'));
     }
 
     /**
@@ -30,7 +26,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.users.create');
+        return view('staff.users.create');
     }
 
     /**
@@ -42,7 +38,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
-            'role' => 'required|in:admin,staff,dokter,pasien',
+            'role' => 'required|in:staff,dokter,pasien',
             
             // Validasi untuk pasien
             'no_rm' => 'required_if:role,pasien|unique:pasien,no_rm',
@@ -88,7 +84,7 @@ class UserController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.users.index')
+            return redirect()->route('staff.users.index')
                 ->with('success', 'User berhasil ditambahkan');
 
         } catch (\Exception $e) {
@@ -103,7 +99,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user->load(['pasien', 'dokter']);
-        return view('admin.users.show', compact('user'));
+        return view('staff.users.show', compact('user'));
     }
 
     /**
@@ -112,7 +108,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $user->load(['pasien', 'dokter']);
-        return view('admin.users.edit', compact('user'));
+        return view('staff.users.edit', compact('user'));
     }
 
     /**
@@ -158,7 +154,7 @@ class UserController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.users.index')
+            return redirect()->route('staff.users.index')
                 ->with('success', 'User berhasil diupdate');
 
         } catch (\Exception $e) {
@@ -174,7 +170,7 @@ class UserController extends Controller
     {
         try {
             $user->delete();
-            return redirect()->route('admin.users.index')
+            return redirect()->route('staff.users.index')
                 ->with('success', 'User berhasil dihapus');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus user: ' . $e->getMessage());

@@ -57,14 +57,16 @@ class PasienSeeder extends Seeder
             $user = User::where('email', $pasienData['email'])->first();
             
             if ($user) {
-                Pasien::create([
-                    'user_id' => $user->id,
-                    'no_rm' => $pasienData['no_rm'],
-                    'nama' => $pasienData['nama'],
-                    'jenis_kelamin' => $pasienData['jenis_kelamin'],
-                    'tanggal_lahir' => $pasienData['tanggal_lahir'],
-                    'alamat' => $pasienData['alamat'],
-                ]);
+                Pasien::firstOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'no_rm' => $pasienData['no_rm'],
+                        'nama' => $pasienData['nama'],
+                        'jenis_kelamin' => $pasienData['jenis_kelamin'],
+                        'tanggal_lahir' => $pasienData['tanggal_lahir'],
+                        'alamat' => $pasienData['alamat'],
+                    ]
+                );
             }
         }
     }

@@ -6,25 +6,44 @@ use App\Models\User;
 use App\Models\Pasien;
 use App\Models\Dokter;
 use App\Models\RekamMedis;
+use App\Models\Obat;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     /**
-     * Dashboard Admin
+     * Dashboard Admin - Mengelola user
      */
     public function adminDashboard()
     {
         $totalUsers = User::count();
         $totalPasien = Pasien::count();
         $totalDokter = Dokter::count();
-        $totalRekamMedis = RekamMedis::count();
+        $totalStaff = User::where('role', 'staff')->count();
 
         return view('admin.dashboard', compact(
             'totalUsers',
             'totalPasien',
             'totalDokter',
-            'totalRekamMedis'
+            'totalStaff'
+        ));
+    }
+
+    /**
+     * Dashboard Staff - Mengelola rekam medis dan obat
+     */
+    public function staffDashboard()
+    {
+        $totalPasien = Pasien::count();
+        $totalRekamMedis = RekamMedis::count();
+        $totalObat = Obat::count();
+        $stokObatRendah = Obat::where('stok', '<', 10)->count();
+
+        return view('staff.dashboard', compact(
+            'totalPasien',
+            'totalRekamMedis',
+            'totalObat',
+            'stokObatRendah'
         ));
     }
 

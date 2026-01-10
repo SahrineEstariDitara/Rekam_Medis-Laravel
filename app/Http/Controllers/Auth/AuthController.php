@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+use App\Models\User;
+
 class AuthController extends Controller
 {
     /**
@@ -16,6 +18,7 @@ class AuthController extends Controller
     {
         return view('auth.login');
     }
+
 
     /**
      * Proses login
@@ -37,6 +40,8 @@ class AuthController extends Controller
             
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
+            } elseif ($user->role === 'staff') {
+                return redirect()->route('staff.dashboard');
             } elseif ($user->role === 'dokter') {
                 return redirect()->route('dokter.dashboard');
             } elseif ($user->role === 'pasien') {
@@ -58,6 +63,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect('/');
     }
 }
+
