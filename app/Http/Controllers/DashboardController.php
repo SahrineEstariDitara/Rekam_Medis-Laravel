@@ -65,11 +65,50 @@ class DashboardController extends Controller
         $totalObat = Obat::count();
         $stokObatRendah = Obat::where('stok', '<', 10)->count();
 
+        // Data Grafik: Tren Kunjungan Pasien (7 Hari Terakhir)
+        $visitsData = RekamMedis::select(DB::raw('DATE(tanggal_periksa) as date'), DB::raw('count(*) as total'))
+            ->where('tanggal_periksa', '>=', now()->subDays(7))
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get();
+        
+        $chartLabels = [];
+        $chartData = [];
+        // Fill missing days with 0
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $chartLabels[] = now()->subDays($i)->format('d M');
+            $visit = $visitsData->firstWhere('date', $date);
+            $chartData[] = $visit ? $visit->total : 0;
+        }
+
+        // Data Grafik: 5 Diagnosa Terbanyak
+        $diagnosaStats = RekamMedis::select('diagnosa', DB::raw('count(*) as total'))
+            ->whereNotNull('diagnosa')
+            ->groupBy('diagnosa')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
+            
+        $diagnosaLabels = $diagnosaStats->pluck('diagnosa')->toArray();
+        $diagnosaData = $diagnosaStats->pluck('total')->toArray();
+
+        // Data Grafik: Status Stok Obat
+        $obatStats = [
+            'Aman' => Obat::where('stok', '>=', 10)->count(),
+            'Rendah' => Obat::where('stok', '<', 10)->count()
+        ];
+
         return view('staff.dashboard', compact(
             'totalPasien',
             'totalRekamMedis',
             'totalObat',
-            'stokObatRendah'
+            'stokObatRendah',
+            'chartLabels',
+            'chartData',
+            'diagnosaLabels',
+            'diagnosaData',
+            'obatStats'
         ));
     }
 

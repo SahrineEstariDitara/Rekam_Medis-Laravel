@@ -67,7 +67,7 @@
                 <table class="table table-borderless mb-0">
                     <tr>
                         <th width="40%" class="text-muted">Tanggal Periksa</th>
-                        <td class="fw-medium">: {{ $rekamMedi->tanggal_periksa->format('d/m/Y') }}</td>
+                        <td class="fw-medium">: {{ $rekamMedi->tanggal_periksa ? $rekamMedi->tanggal_periksa->format('d/m/Y') : '-' }}</td>
                     </tr>
                     <tr>
                         <th class="text-muted">Dokter Pemeriksa</th>
@@ -120,8 +120,8 @@
 </div>
 
 <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
-    <div class="card-header bg-primary text-white border-bottom border-light p-3 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-bold text-white">
+    <div class="card-header border-bottom-0 p-3 d-flex justify-content-between align-items-center" style="background-color: #AA60C8; color: white;">
+        <h5 class="mb-0 fw-bold">
             <i class="bi bi-capsule me-2"></i>Resep Obat
         </h5>
         
@@ -130,13 +130,14 @@
         @if($rekamMedi->resep && $rekamMedi->resep->count() > 0)
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead class="bg-primary text-white">
+                    <thead style="background-color: #FFDFEF; color: #AA60C8;">
                         <tr>
-                            <th class="ps-4 py-3 text-white" width="5%" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">No</th>
-                            <th class="py-3 text-white">Nama Obat</th>
-                            <th class="py-3 text-white">Jumlah</th>
-                            <th class="py-3 text-white">Aturan Pakai / Dosis</th>
-                            <th class="pe-4 py-3 text-end text-white" width="10%" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">Aksi</th>
+                            <th class="ps-4 py-3" width="5%" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">NO</th>
+                            <th class="py-3">NAMA OBAT</th>
+                            <th class="py-3">SISA STOK</th>
+                            <th class="py-3">JUMLAH</th>
+                            <th class="py-3">ATURAN PAKAI / DOSIS</th>
+                            <th class="pe-4 py-3 text-end" width="10%" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">AKSI</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -144,8 +145,9 @@
                             <tr>
                                 <td class="ps-4">{{ $index + 1 }}</td>
                                 <td class="fw-medium">{{ $r->obat->nama_obat }}</td>
+                                <td><span class="badge bg-secondary rounded-pill">{{ $r->obat->stok }}</span></td>
                                 <td>{{ $r->jumlah }} {{ $r->satuan ?? 'pcs' }}</td>
-                                <td><span class="fst-italic text-muted">{{ $r->aturan_pakai }}</span></td>
+                                <td><span class="fst-italic text-muted">{{ $r->dosis }}</span></td>
                                 <td class="pe-4 text-end">
                                     <form action="{{ route('dokter.resep.destroy', $r) }}" method="POST" class="d-inline">
                                         @csrf
@@ -174,8 +176,8 @@
 </div>
 
 <div class="mt-4 mb-5">
-    <a href="{{ route('dokter.rekam-medis.index') }}" class="btn btn-outline-secondary px-4 rounded-pill">
-        <i class="bi bi-arrow-left me-2"></i> Kembali ke Daftar
+    <a href="{{ route('dokter.rekam-medis.index') }}" class="btn btn-secondary px-4 rounded-pill">
+        <i class="bi bi-arrow-left me-2"></i>Kembali
     </a>
 </div>
 
@@ -197,22 +199,30 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-secondary">Nama Obat</label>
-                        <select name="obat_id" class="form-select bg-light border-0" required style="border-radius: 10px;">
-                            <option value="">-- Pilih Obat --</option>
-                            @foreach($obats as $obat)
-                                <option value="{{ $obat->id }}">{{ $obat->nama_obat }} (Stok: {{ $obat->stok }})</option>
+                        <select name="obat_id" id="obatSelect" class="form-select bg-light border-0" required style="border-radius: 10px;" onchange="updateStokInfo()">
+                            <option value="" data-stok="0">-- Pilih Obat --</option>
+                            @foreach($obats->where('stok', '>', 0) as $obat)
+                                <option value="{{ $obat->id }}" data-stok="{{ $obat->stok }}">
+                                    {{ $obat->nama_obat }} — Stok: {{ $obat->stok }} pcs
+                                </option>
                             @endforeach
                         </select>
+                        <div id="stokInfo" class="mt-2 small text-muted d-none">
+                            <i class="bi bi-box-seam me-1"></i> Stok tersedia: <span id="stokValue" class="fw-bold">0</span> pcs
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small text-secondary">Jumlah</label>
-                        <input type="number" name="jumlah" class="form-control bg-light border-0" placeholder="Contoh: 10" required style="border-radius: 10px;">
+                        <label class="form-label fw-bold small text-secondary">Jumlah yang Diresepkan</label>
+                        <input type="number" name="jumlah" id="jumlahInput" class="form-control bg-light border-0" placeholder="Masukkan jumlah" min="1" required style="border-radius: 10px;" oninput="checkJumlah()">
+                        <div id="jumlahWarning" class="mt-1 small text-danger d-none">
+                            <i class="bi bi-exclamation-triangle me-1"></i> Jumlah melebihi stok!
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-secondary">Aturan Pakai / Dosis</label>
-                        <textarea name="aturan_pakai" class="form-control bg-light border-0" rows="3" placeholder="Contoh: 3x1 Sesudah makan" required style="border-radius: 10px;"></textarea>
+                        <textarea name="dosis" class="form-control bg-light border-0" rows="3" placeholder="Contoh: 3x1 Sesudah makan" required style="border-radius: 10px;"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-top-0 pt-0 pb-4 pe-4">
@@ -224,3 +234,53 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    let currentStok = 0;
+
+    function updateStokInfo() {
+        const select = document.getElementById('obatSelect');
+        const stokInfo = document.getElementById('stokInfo');
+        const stokValue = document.getElementById('stokValue');
+        const selectedOption = select.options[select.selectedIndex];
+        
+        currentStok = parseInt(selectedOption.getAttribute('data-stok')) || 0;
+        
+        if (select.value) {
+            stokValue.textContent = currentStok;
+            stokInfo.classList.remove('d-none');
+            
+            // Change color based on stock level
+            if (currentStok <= 10) {
+                stokValue.className = 'fw-bold text-danger';
+            } else if (currentStok <= 20) {
+                stokValue.className = 'fw-bold text-warning';
+            } else {
+                stokValue.className = 'fw-bold text-success';
+            }
+        } else {
+            stokInfo.classList.add('d-none');
+        }
+        
+        checkJumlah();
+    }
+
+    function checkJumlah() {
+        const jumlahInput = document.getElementById('jumlahInput');
+        const warning = document.getElementById('jumlahWarning');
+        const submitBtn = document.querySelector('#modalTambahResep button[type="submit"]');
+        const jumlah = parseInt(jumlahInput.value) || 0;
+        
+        if (jumlah > currentStok && currentStok > 0) {
+            warning.classList.remove('d-none');
+            jumlahInput.classList.add('is-invalid');
+            submitBtn.disabled = true;
+        } else {
+            warning.classList.add('d-none');
+            jumlahInput.classList.remove('is-invalid');
+            submitBtn.disabled = false;
+        }
+    }
+</script>
+@endpush

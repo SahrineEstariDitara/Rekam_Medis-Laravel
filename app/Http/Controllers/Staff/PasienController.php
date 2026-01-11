@@ -51,6 +51,7 @@ class PasienController extends Controller
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required|string',
+            'no_tlp' => 'required|string|max:20',
         ]);
 
         // Create User first
@@ -69,9 +70,11 @@ class PasienController extends Controller
             'jenis_kelamin' => $request->jenis_kelamin,
             'tanggal_lahir' => $request->tanggal_lahir,
             'alamat' => $request->alamat,
+            'no_tlp' => $request->no_tlp,
         ]);
 
-        return redirect()->route('staff.pasien.index')
+        $route = auth()->user()->role === 'admin' ? 'admin.users.index' : 'staff.pasien.index';
+        return redirect()->route($route)
             ->with('success', 'Data Pasien berhasil ditambahkan. Password default: "password"');
     }
 
@@ -102,6 +105,7 @@ class PasienController extends Controller
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required|string',
+            'no_tlp' => 'required|string|max:20',
         ]);
 
         // Update User
@@ -116,9 +120,11 @@ class PasienController extends Controller
             'jenis_kelamin' => $request->jenis_kelamin,
             'tanggal_lahir' => $request->tanggal_lahir,
             'alamat' => $request->alamat,
+            'no_tlp' => $request->no_tlp,
         ]);
 
-        return redirect()->route('staff.pasien.index')
+        $route = auth()->user()->role === 'admin' ? 'admin.users.index' : 'staff.pasien.index';
+        return redirect()->route($route)
             ->with('success', 'Data Pasien berhasil diperbarui.');
     }
 
@@ -138,7 +144,8 @@ class PasienController extends Controller
             $user->delete();
         }
 
-        return redirect()->route('staff.pasien.index')
+        $route = auth()->user()->role === 'admin' ? 'admin.users.index' : 'staff.pasien.index';
+        return redirect()->route($route)
             ->with('success', 'Data Pasien berhasil dihapus.');
     }
 }

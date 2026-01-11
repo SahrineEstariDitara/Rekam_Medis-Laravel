@@ -25,19 +25,23 @@
 @endif
 
 <div class="card">
-    <div class="card-header">
-        <ul class="nav nav-tabs card-header-tabs" id="userTabs" role="tablist">
+    <div class="card-header border-bottom-0" style="background-color: #FFDFEF; border-radius: 15px 15px 0 0; padding-bottom: 0;">
+        <ul class="nav nav-tabs card-header-tabs" id="userTabs" role="tablist" style="border-bottom: none;">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab">Admin</button>
+                <button class="nav-link active fw-bold px-4 py-2" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab"
+                        style="color: #AA60C8; border-radius: 10px 10px 0 0; border: none;">Admin</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff" type="button" role="tab">Staff</button>
+                <button class="nav-link fw-bold px-4 py-2" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff" type="button" role="tab"
+                        style="color: #AA60C8; border-radius: 10px 10px 0 0; border: none;">Staff</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="dokter-tab" data-bs-toggle="tab" data-bs-target="#dokter" type="button" role="tab">Dokter</button>
+                <button class="nav-link fw-bold px-4 py-2" id="dokter-tab" data-bs-toggle="tab" data-bs-target="#dokter" type="button" role="tab"
+                        style="color: #AA60C8; border-radius: 10px 10px 0 0; border: none;">Dokter</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="pasien-tab" data-bs-toggle="tab" data-bs-target="#pasien" type="button" role="tab">Pasien</button>
+                <button class="nav-link fw-bold px-4 py-2" id="pasien-tab" data-bs-toggle="tab" data-bs-target="#pasien" type="button" role="tab"
+                        style="color: #AA60C8; border-radius: 10px 10px 0 0; border: none;">Pasien</button>
             </li>
         </ul>
     </div>
@@ -121,4 +125,37 @@
         }
     });
 </script>
+
+<style>
+    /* Styling khusus untuk tab navigasi */
+    #userTabs .nav-link {
+        background-color: transparent; /* Tab tidak aktif transparan */
+        color: #AA60C8; /* Warna teks ungu */
+        opacity: 0.7;
+        transition: all 0.3s ease;
+    }
+
+    #userTabs .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.5); /* Hover effect */
+        opacity: 1;
+    }
+
+    #userTabs .nav-link.active {
+        background-color: #ffffff !important; /* Tab aktif putih */
+        color: #AA60C8 !important;
+        opacity: 1;
+        box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* Bayangan halus */
+    }
+    
+    /* Hapus border default card agar menyatu dengan header */
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    
+    .card-header {
+        border-bottom: 1px solid #FFF0F5;
+    }
+</style>
 @endsection

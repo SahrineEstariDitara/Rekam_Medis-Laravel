@@ -75,7 +75,13 @@ class AuthController extends Controller
             } elseif ($user->role === 'dokter') {
                 return redirect()->route('dokter.dashboard');
             } elseif ($user->role === 'pasien') {
-                return redirect()->route('pasien.dashboard');
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Maaf, Pasien harus login melalui form login khusus Pasien.',
+                ])->onlyInput('email');
             }
         }
 

@@ -5,9 +5,6 @@
 @section('content')
 <div class="page-header d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0"><i class="bi bi-people-fill"></i> Data Pasien</h2>
-    <a href="{{ route('staff.pasien.create') }}" class="btn btn-primary">
-        <i class="bi bi-person-plus-fill me-2"></i>Tambah Pasien
-    </a>
 </div>
 
 <div class="card">
@@ -15,39 +12,48 @@
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead>
-                    <tr>
-                        <th width="5%">No</th>
-                        <th>No. RM</th>
-                        <th>Nama Pasien</th>
-                        <th>Jaminan</th> <!-- Optional if needed later, ignoring for now based on fields -->
-                        <th>Jenis Kelamin</th>
-                        <th>Alamat</th>
-                        <th width="15%">Aksi</th>
+                    <tr style="background-color: #FFDFEF; color: #AA60C8;">
+                        <th width="5%" class="text-center">NO</th>
+                        <th width="15%">NO. RM</th>
+                        <th width="20%">NAMA PASIEN</th>
+                        <th width="15%">JENIS KELAMIN</th>
+                        <th width="20%">ALAMAT</th>
+                        <th width="10%">NO. TELEPON</th>
+                        <th width="15%" class="text-center">AKSI</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($pasiens as $index => $pasien)
                         <tr>
-                            <td class="text-muted">{{ $pasiens->firstItem() + $index }}</td>
-                            <td><span class="badge" style="background-color: #FFDFEF; color: #AA60C8;">{{ $pasien->no_rm }}</span></td>
-                            <td class="fw-medium">{{ $pasien->nama }}</td>
-                            <td>
+                            <td class="text-center text-muted align-middle">{{ $pasiens->firstItem() + $index }}</td>
+                            <td class="align-middle">
+                                <span class="badge rounded-pill fw-normal" style="background-color: #FFDFEF; color: #AA60C8; border: 1px solid #EABDE6;">
+                                    {{ $pasien->no_rm }}
+                                </span>
+                            </td>
+                            <td class="fw-medium text-dark align-middle">{{ $pasien->nama }}</td>
+                            <td class="align-middle">
                                 @if($pasien->jenis_kelamin == 'Laki-laki')
-                                    <span class="badge bg-info bg-opacity-10 text-info"><i class="bi bi-gender-male me-1"></i> Laki-laki</span>
+                                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-10 rounded-pill">
+                                        <i class="bi bi-gender-male me-1"></i> Laki-laki
+                                    </span>
                                 @else
-                                    <span class="badge bg-danger bg-opacity-10 text-danger"><i class="bi bi-gender-female me-1"></i> Perempuan</span>
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10 rounded-pill">
+                                        <i class="bi bi-gender-female me-1"></i> Perempuan
+                                    </span>
                                 @endif
                             </td>
-                             <td class="small text-muted">{{ Str::limit($pasien->alamat, 40) }}</td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('staff.pasien.edit', $pasien) }}" class="btn btn-outline-primary" title="Edit">
+                            <td class="small text-muted align-middle text-truncate" style="max-width: 200px;" title="{{ $pasien->alamat }}">{{ $pasien->alamat ?? '-' }}</td>
+                            <td class="small text-muted align-middle">{{ $pasien->no_tlp ?? '-' }}</td>
+                            <td class="text-center align-middle">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('staff.pasien.edit', $pasien) }}" class="btn btn-sm btn-light shadow-sm" style="color: #AA60C8; border-radius: 8px 0 0 8px; border: 1px solid #eee;" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <form action="{{ route('staff.pasien.destroy', $pasien) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus pasien ini? Akun user terkait juga akan dihapus.')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger" title="Hapus">
+                                        <button type="submit" class="btn btn-sm btn-light text-danger shadow-sm" style="border-radius: 0 8px 8px 0; border: 1px solid #eee; border-left: none;" title="Hapus">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>

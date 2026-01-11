@@ -56,4 +56,13 @@ class ObatController extends Controller
         return redirect()->route('staff.obat.index')
             ->with('success', 'Obat berhasil dihapus');
     }
+
+    /**
+     * Display a listing of medicines for doctors (read-only)
+     */
+    public function indexForDokter()
+    {
+        $obat = Obat::orderBy('nama_obat')->get();
+        return view('dokter.obat.index', compact('obat'));
+    }
 }

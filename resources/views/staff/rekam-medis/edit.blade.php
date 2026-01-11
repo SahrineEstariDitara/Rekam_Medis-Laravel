@@ -5,9 +5,7 @@
 @section('content')
 <div class="page-header">
     <h2><i class="bi bi-file-earmark-medical"></i> Edit Rekam Medis</h2>
-    <a href="{{ route('staff.rekam-medis.index') }}" class="btn btn-outline-primary">
-        <i class="bi bi-arrow-left me-2"></i>Kembali
-    </a>
+
 </div>
 
 <div class="row">
@@ -53,7 +51,7 @@
                             <label for="tanggal_periksa" class="form-label">Tanggal Periksa <span class="text-danger">*</span></label>
                             <input type="date" class="form-control @error('tanggal_periksa') is-invalid @enderror" 
                                    id="tanggal_periksa" name="tanggal_periksa" 
-                                   value="{{ old('tanggal_periksa', $rekamMedis->tanggal_periksa->format('Y-m-d')) }}" required>
+                                   value="{{ old('tanggal_periksa', $rekamMedis->tanggal_periksa ? $rekamMedis->tanggal_periksa->format('Y-m-d') : '') }}" required>
                             @error('tanggal_periksa')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -87,13 +85,13 @@
                         </div>
                     </div>
                     
-                    <div class="d-flex gap-2 pt-3 border-top mt-4">
+                    <div class="d-flex justify-content-between pt-3 border-top mt-4">
+                        <a href="{{ route('staff.rekam-medis.index') }}" class="btn btn-secondary rounded-pill px-4">
+                            <i class="bi bi-arrow-left me-2"></i>Kembali
+                        </a>
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save me-2"></i>Update Data
                         </button>
-                        <a href="{{ route('staff.rekam-medis.index') }}" class="btn btn-outline-primary">
-                            Batal
-                        </a>
                     </div>
                 </form>
             </div>

@@ -15,6 +15,8 @@ class Dokter extends Model
         'user_id',
         'nama',
         'spesialis',
+        'no_telp',
+        'alamat',
     ];
 
     /**

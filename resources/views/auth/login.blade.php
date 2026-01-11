@@ -193,7 +193,7 @@
                                        class="form-control" 
                                        id="password" 
                                        name="password" 
-                                       placeholder="••••••••"
+                                       placeholder="       "
                                        required>
                             </div>
                             
@@ -204,13 +204,15 @@
                         
                         <div class="demo-account text-center">
                             <h6 class="fw-bold mb-2" style="color: var(--primary-color)">Demo Accounts</h6>
-                            <div class="d-grid gap-1">
-                                <div><span class="badge bg-danger bg-opacity-10 text-danger mb-1">Admin</span> admin@example.com</div>
-                                <div><span class="badge bg-warning bg-opacity-10 text-warning text-dark mb-1">Staff</span> staff@example.com</div>
-                                <div><span class="badge bg-info bg-opacity-10 text-info mb-1">Dokter</span> dokter1@example.com</div>
-                                <div><span class="badge bg-success bg-opacity-10 text-success">Pasien</span> pasien1@example.com</div>
+                            <div class="d-grid gap-1" style="font-size: 0.8rem;">
+                                <div><span class="badge bg-danger bg-opacity-10 text-danger mb-1">Admin</span> admin@admin.rekammedis.com</div>
+                                <div><span class="badge bg-warning bg-opacity-10 text-warning text-dark mb-1">Staff</span> staff@staff.rekammedis.com</div>
+                                <div><span class="badge bg-info bg-opacity-10 text-info mb-1">Dokter</span> dokter1@dokter.rekammedis.com</div>
+                                <div class="mt-2 pt-2 border-top"><span class="badge bg-success bg-opacity-10 text-success">Pasien</span> pasien1@pasien.rekammedis.com</div>
+                                <div class="small text-muted fst-italic">⚠️ Pasien harus login via tab "Pasien"</div>
                             </div>
                             <div class="mt-2 small text-muted">Password: <strong>password</strong></div>
+                            <div class="small text-muted">No. RM (Pasien): <strong>RM2026001</strong></div>
                         </div>
                     </div>
                 </div>

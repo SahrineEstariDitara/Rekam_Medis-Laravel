@@ -63,6 +63,14 @@
                         </div>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="no_tlp" class="form-label">No. Telepon / HP <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('no_tlp') is-invalid @enderror" id="no_tlp" name="no_tlp" value="{{ old('no_tlp') }}" required placeholder="08xxxxxxxxxx">
+                        @error('no_tlp')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <div class="mb-4">
                         <label for="alamat" class="form-label">Alamat Lengkap <span class="text-danger">*</span></label>
                         <textarea class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3" required placeholder="Alamat lengkap domisili pasien">{{ old('alamat') }}</textarea>
@@ -72,7 +80,7 @@
                     </div>
 
                     <div class="d-flex justify-content-between pt-3 border-top">
-                        <a href="{{ route('staff.pasien.index') }}" class="btn btn-outline-secondary px-4 rounded-pill">
+                        <a href="{{ auth()->user()->role === 'admin' ? route('admin.users.index') : route('staff.pasien.index') }}" class="btn btn-secondary px-4 rounded-pill">
                             <i class="bi bi-arrow-left me-2"></i>Kembali
                         </a>
                         <button type="submit" class="btn btn-primary px-5 rounded-pill shadow-sm">

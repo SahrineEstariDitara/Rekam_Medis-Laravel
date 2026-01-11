@@ -53,13 +53,13 @@
                 @enderror
             </div>
             
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save"></i> Update
-                </button>
-                <a href="{{ route('staff.obat.index') }}" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i> Kembali
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ route('staff.obat.index') }}" class="btn btn-secondary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-2"></i>Kembali
                 </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-2"></i>Update
+                </button>
             </div>
         </form>
     </div>

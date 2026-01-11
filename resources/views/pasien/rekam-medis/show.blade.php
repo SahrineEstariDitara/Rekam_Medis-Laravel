@@ -128,8 +128,8 @@
 </div>
 
 <div class="mt-4">
-    <a href="{{ route('pasien.rekam-medis.index') }}" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Kembali ke Riwayat
+    <a href="{{ route('pasien.rekam-medis.index') }}" class="btn btn-secondary rounded-pill px-4">
+        <i class="bi bi-arrow-left me-2"></i>Kembali
     </a>
 </div>
 @endsection

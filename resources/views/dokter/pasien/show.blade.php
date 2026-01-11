@@ -33,7 +33,9 @@
                             <td>: {{ $pasien->alamat }}</td>
                         </tr>
                     </table>
-                    <a href="{{ url()->previous() }}" class="btn btn-secondary mt-3">Kembali</a>
+                    <a href="{{ url()->previous() }}" class="btn btn-secondary rounded-pill px-4 mt-3">
+                        <i class="bi bi-arrow-left me-2"></i>Kembali
+                    </a>
                 </div>
             </div>
 

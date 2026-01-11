@@ -13,14 +13,14 @@
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="ps-4 py-3">Tanggal</th>
-                                <th class="py-3">Nama Obat</th>
-                                <th class="py-3">Jenis</th>
-                                <th class="py-3">Jumlah</th>
-                                <th class="py-3">Aturan Pakai</th>
-                                <th class="py-3">Dokter</th>
+                        <thead>
+                            <tr style="background-color: #FFDFEF; color: #AA60C8;">
+                                <th class="ps-4 py-3">TANGGAL</th>
+                                <th class="py-3">NAMA OBAT</th>
+                                <th class="py-3">JENIS</th>
+                                <th class="py-3">JUMLAH</th>
+                                <th class="py-3">DOSIS</th>
+                                <th class="py-3">DOKTER</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -29,7 +29,7 @@
                                     <td class="ps-4 py-3 fw-medium">{{ $r->rekamMedis->tanggal_periksa->format('d/m/Y') }}</td>
                                     <td class="py-3">
                                         <div class="d-flex align-items-center">
-                                            <div class="bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 35px; height: 35px;">
+                                            <div class="rounded-circle me-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 35px; height: 35px; background-color: #FFF0F5; color: #AA60C8;">
                                                 <i class="bi bi-capsule"></i>
                                             </div>
                                             {{ $r->obat->nama_obat }}
@@ -38,16 +38,16 @@
                                     <td class="py-3">
                                         @php
                                             $badgeClass = match($r->obat->jenis) {
-                                                'Obat Keras' => 'bg-danger bg-opacity-10 text-danger',
-                                                'Obat Bebas' => 'bg-success bg-opacity-10 text-success',
-                                                'Obat Bebas Terbatas' => 'bg-warning bg-opacity-10 text-dark',
-                                                default => 'bg-secondary bg-opacity-10 text-secondary'
+                                                'Obat Keras' => 'bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10 rounded-pill',
+                                                'Obat Bebas' => 'bg-success bg-opacity-10 text-success border border-success border-opacity-10 rounded-pill',
+                                                'Obat Bebas Terbatas' => 'bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-10 rounded-pill',
+                                                default => 'bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill'
                                             };
                                         @endphp
                                         <span class="badge {{ $badgeClass }}">{{ $r->obat->jenis }}</span>
                                     </td>
                                     <td class="py-3">{{ $r->jumlah }} {{ $r->satuan ?? 'pcs' }}</td>
-                                    <td class="py-3 fst-italic text-muted">{{ $r->aturan_pakai }}</td>
+                                    <td class="py-3 fst-italic text-muted">{{ $r->dosis }}</td>
                                     <td class="py-3">{{ $r->rekamMedis->dokter->nama }}</td>
                                 </tr>
                             @empty

@@ -32,6 +32,9 @@ class ResepController extends Controller
     /**
      * Simpan Resep
      */
+    /**
+     * Simpan Resep
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -41,32 +44,38 @@ class ResepController extends Controller
             'dosis'          => 'required|string',
         ]);
 
-        $rekamMedis = RekamMedis::findOrFail($request->rekam_medis_id);
-        
-        if ($rekamMedis->dokter_id !== auth()->user()->dokter->id) {
-            abort(403, 'Anda tidak memiliki izin');
-        }
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $rekamMedis = RekamMedis::findOrFail($request->rekam_medis_id);
+            
+            if ($rekamMedis->dokter_id !== auth()->user()->dokter->id) {
+                abort(403, 'Anda tidak memiliki izin');
+            }
 
-        // Cek Stok
-        $obat = Obat::findOrFail($request->obat_id);
-        if ($obat->stok < $request->jumlah) {
-            return back()->withInput()->with('error', 'Stok obat tidak mencukupi! Sisa: ' . $obat->stok);
-        }
+            // Lock for update untuk mencegah race condition
+            $obat = Obat::lockForUpdate()->findOrFail($request->obat_id);
+            
+            if ($obat->stok < $request->jumlah) {
+                // Throw exception agar transaction di-rollback (meski di sini belum ada perubahan DB)
+                // Tapi lebih baik return back di luar transaction atau throw validation exception
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'jumlah' => 'Stok obat tidak mencukupi! Sisa: ' . $obat->stok
+                ]);
+            }
 
-        // Simpan
-        Resep::create([
-            'rekam_medis_id' => $request->rekam_medis_id,
-            'obat_id'        => $request->obat_id,
-            'jumlah'         => $request->jumlah,
-            'dosis'          => $request->dosis,
-        ]);
+            // Simpan Resep
+            Resep::create([
+                'rekam_medis_id' => $request->rekam_medis_id,
+                'obat_id'        => $request->obat_id,
+                'jumlah'         => $request->jumlah,
+                'dosis'          => $request->dosis,
+            ]);
 
-        // Kurangi Stok
-        $obat->decrement('stok', $request->jumlah);
+            // Kurangi Stok
+            $obat->decrement('stok', $request->jumlah);
 
-        // Redirect kembali ke detail rekam medis
-        return redirect()->route('dokter.rekam-medis.show', $rekamMedis)
-            ->with('success', 'Resep berhasil ditambahkan');
+            return redirect()->route('dokter.rekam-medis.show', $rekamMedis)
+                ->with('success', 'Resep berhasil ditambahkan. Stok obat diperbarui (Sisa: ' . $obat->stok . ' pcs).');
+        });
     }
 
     /**
@@ -74,18 +83,24 @@ class ResepController extends Controller
      */
     public function destroy(Resep $resep)
     {
-        if ($resep->rekamMedis->dokter_id !== auth()->user()->dokter->id) {
-            abort(403, 'Anda tidak memiliki izin');
-        }
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($resep) {
+            if ($resep->rekamMedis->dokter_id !== auth()->user()->dokter->id) {
+                abort(403, 'Anda tidak memiliki izin');
+            }
 
-        $rekamMedisId = $resep->rekam_medis_id;
-        
-        // Balikin stok sebelum hapus
-        $resep->obat->increment('stok', $resep->jumlah);
-        
-        $resep->delete();
+            $rekamMedisId = $resep->rekam_medis_id;
+            
+            // Balikin stok sebelum hapus
+            // Lock juga disini biar aman
+            $obat = Obat::lockForUpdate()->find($resep->obat_id);
+            if($obat) {
+                $obat->increment('stok', $resep->jumlah);
+            }
+            
+            $resep->delete();
 
-        return redirect()->route('dokter.rekam-medis.show', $rekamMedisId)
-            ->with('success', 'Resep berhasil dihapus');
+            return redirect()->route('dokter.rekam-medis.show', $rekamMedisId)
+                ->with('success', 'Resep berhasil dihapus. Stok obat dikembalikan (Total: ' . ($obat->stok ?? '-') . ' pcs).');
+        });
     }
 }

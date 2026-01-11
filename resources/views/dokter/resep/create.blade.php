@@ -56,13 +56,13 @@
                 </div>
             </div>
 
-            <div class="mt-4">
-                <button type="submit" class="btn btn-success">
-                    <i class="bi bi-plus-circle"></i> Simpan Resep
-                </button>
-                <a href="{{ route('dokter.rekam-medis.show', $rekamMedis->id) }}" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i> Batal & Kembali
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ route('dokter.rekam-medis.show', $rekamMedis->id) }}" class="btn btn-secondary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-2"></i>Kembali
                 </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle me-2"></i>Simpan Resep
+                </button>
             </div>
         </form>
     </div>

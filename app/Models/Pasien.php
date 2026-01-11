@@ -15,9 +15,14 @@ class Pasien extends Model
         'user_id',
         'no_rm',
         'nama',
+        'tempat_lahir',
         'jenis_kelamin',
         'tanggal_lahir',
         'alamat',
+        'no_tlp',
+        'keluhan',
+        'tinggi_badan',
+        'berat_badan',
     ];
 
     protected $casts = [

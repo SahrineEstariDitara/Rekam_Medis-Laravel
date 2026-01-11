@@ -14,6 +14,7 @@ class Resep extends Model
     protected $fillable = [
         'rekam_medis_id',
         'obat_id',
+        'jumlah',
         'dosis',
     ];
 

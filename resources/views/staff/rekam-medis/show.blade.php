@@ -5,9 +5,7 @@
 @section('content')
 <div class="page-header">
     <h2><i class="bi bi-file-earmark-medical-fill"></i> Detail Rekam Medis</h2>
-    <a href="{{ route('staff.rekam-medis.index') }}" class="btn btn-outline-primary">
-        <i class="bi bi-arrow-left me-2"></i>Kembali
-    </a>
+
 </div>
 
 <div class="row">
@@ -15,7 +13,7 @@
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold">Informasi Pemeriksaan</h5>
-                <span class="badge bg-primary">{{ $rekamMedis->tanggal_periksa->format('d F Y') }}</span>
+                <span class="badge bg-primary">{{ $rekamMedis->tanggal_periksa ? $rekamMedis->tanggal_periksa->format('d F Y') : '-' }}</span>
             </div>
             <div class="card-body">
                 <div class="row mb-4">
@@ -46,6 +44,12 @@
                 <div class="mb-0">
                     <label class="text-muted small text-uppercase fw-bold mb-1">Tindakan</label>
                     <p class="text-dark bg-light p-3 rounded">{{ $rekamMedis->tindakan }}</p>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{{ route('staff.rekam-medis.index') }}" class="btn btn-secondary rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-2"></i>Kembali
+                    </a>
                 </div>
             </div>
         </div>

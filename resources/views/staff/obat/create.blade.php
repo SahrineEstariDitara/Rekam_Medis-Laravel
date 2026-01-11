@@ -5,9 +5,7 @@
 @section('content')
 <div class="page-header">
     <h2><i class="bi bi-capsule-pill"></i> Tambah Obat Baru</h2>
-    <a href="{{ route('staff.obat.index') }}" class="btn btn-outline-primary">
-        <i class="bi bi-arrow-left me-2"></i>Kembali
-    </a>
+
 
 </div>
 
@@ -60,14 +58,13 @@
                         @enderror
                     </div>
                     
-                    <div class="d-flex gap-2 pt-3 border-top">
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        <a href="{{ route('staff.obat.index') }}" class="btn btn-secondary rounded-pill px-4">
+                            <i class="bi bi-arrow-left me-2"></i>Kembali
+                        </a>
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save me-2"></i>Simpan
                         </button>
-                        <a href="{{ route('staff.obat.index') }}" class="btn btn-outline-primary">
-                            Batal
-                        </a>
-
                     </div>
                 </form>
             </div>

@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Tambah User Baru</h5>
-                <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+
             </div>
             <div class="card-body">
                 <form action="{{ route('admin.users.store') }}" method="POST">
@@ -96,7 +96,10 @@
                         </div>
                     </div>
 
-                    <div class="d-grid">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary rounded-pill px-4">
+                            <i class="bi bi-arrow-left me-2"></i>Kembali
+                        </a>
                         <button type="submit" class="btn btn-primary">Simpan User Baru</button>
                     </div>
                 </form>

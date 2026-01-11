@@ -5,7 +5,7 @@
 @section('content')
 <div class="page-header d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-person-badge"></i> Detail Profil</h2>
-    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
+    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary rounded-pill px-4">
         <i class="bi bi-arrow-left me-2"></i>Kembali
     </a>
 </div>

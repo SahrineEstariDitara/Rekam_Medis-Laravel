@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     {
         // Admin
         User::firstOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@admin.rekammedis.com'],
             [
                 'name' => 'Admin Sistem',
                 'password' => Hash::make('password'),
@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
 
         // Staff
         User::firstOrCreate(
-            ['email' => 'staff@example.com'],
+            ['email' => 'staff@staff.rekammedis.com'],
             [
                 'name' => 'Staff Sistem',
                 'password' => Hash::make('password'),
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
 
         // Dokter
         User::firstOrCreate(
-            ['email' => 'dokter1@example.com'],
+            ['email' => 'dokter1@dokter.rekammedis.com'],
             [
                 'name' => 'Dr. Ahmad Hidayat',
                 'password' => Hash::make('password'),
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'dokter2@example.com'],
+            ['email' => 'dokter2@dokter.rekammedis.com'],
             [
                 'name' => 'Dr. Siti Nurhaliza',
                 'password' => Hash::make('password'),
@@ -50,7 +50,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'dokter3@example.com'],
+            ['email' => 'dokter3@dokter.rekammedis.com'],
             [
                 'name' => 'Dr. Budi Santoso',
                 'password' => Hash::make('password'),
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
 
         // Pasien
         User::firstOrCreate(
-            ['email' => 'pasien1@example.com'],
+            ['email' => 'pasien1@pasien.rekammedis.com'],
             [
                 'name' => 'Andi Wijaya',
                 'password' => Hash::make('password'),
@@ -69,7 +69,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'pasien2@example.com'],
+            ['email' => 'pasien2@pasien.rekammedis.com'],
             [
                 'name' => 'Sari Indah',
                 'password' => Hash::make('password'),
@@ -78,7 +78,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'pasien3@example.com'],
+            ['email' => 'pasien3@pasien.rekammedis.com'],
             [
                 'name' => 'Rudi Hartono',
                 'password' => Hash::make('password'),
@@ -87,7 +87,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'pasien4@example.com'],
+            ['email' => 'pasien4@pasien.rekammedis.com'],
             [
                 'name' => 'Maya Sari',
                 'password' => Hash::make('password'),
@@ -96,7 +96,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'pasien5@example.com'],
+            ['email' => 'pasien5@pasien.rekammedis.com'],
             [
                 'name' => 'Dedi Kurniawan',
                 'password' => Hash::make('password'),

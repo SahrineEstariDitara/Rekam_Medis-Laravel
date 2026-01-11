@@ -8,6 +8,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ Request::is('admin/pendaftaran*') ? 'active' : '' }}" href="{{ route('admin.pendaftaran.create') }}">
+                        <i class="bi bi-person-plus"></i> Pendaftaran Pasien
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                         <i class="bi bi-people"></i> Kelola User
                     </a>
@@ -19,8 +24,18 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ Request::is('staff/pasien/create') ? 'active' : '' }}" href="{{ route('staff.pasien.create') }}">
+                        <i class="bi bi-person-plus"></i> Pendaftaran Pasien
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ Request::is('staff/pasien*') ? 'active' : '' }}" href="{{ route('staff.pasien.index') }}">
                         <i class="bi bi-people-fill"></i> Data Pasien
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::is('staff/dokter*') ? 'active' : '' }}" href="{{ route('staff.dokter.index') }}">
+                        <i class="bi bi-person-badge"></i> Data Dokter
                     </a>
                 </li>
                 <li class="nav-item">
@@ -49,6 +64,7 @@
                         <i class="bi bi-file-medical"></i> Rekam Medis
                     </a>
                 </li>
+
             @elseif(auth()->user()->role === 'pasien')
                 <li class="nav-item">
                     <a class="nav-link {{ Request::is('pasien/dashboard') ? 'active' : '' }}" href="{{ route('pasien.dashboard') }}">
