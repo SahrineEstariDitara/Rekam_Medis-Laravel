@@ -8,6 +8,7 @@ use App\Models\Dokter;
 use App\Models\RekamMedis;
 use App\Models\Obat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -21,11 +22,36 @@ class DashboardController extends Controller
         $totalDokter = Dokter::count();
         $totalStaff = User::where('role', 'staff')->count();
 
+        // Statistik 5 Penyakit (Diagnosa) Terbanyak
+        $penyakitTerbanyak = RekamMedis::select('diagnosa', DB::raw('count(*) as total'))
+            ->whereNotNull('diagnosa')
+            ->groupBy('diagnosa')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
+
+        // Ambil kunjungan (Rekam Medis) hari ini
+        $kunjunganHariIni = RekamMedis::with(['pasien.user', 'dokter'])
+            ->whereDate('tanggal_periksa', today())
+            ->latest()
+            ->get();
+
+        // Lampirkan riwayat singkat untuk setiap kunjungan (antisipasi jika relasi hasMany belum ada di model Pasien)
+        foreach ($kunjunganHariIni as $kunjungan) {
+            $kunjungan->riwayat = RekamMedis::where('pasien_id', $kunjungan->pasien_id)
+                ->where('id', '!=', $kunjungan->id) // Kecualikan kunjungan ini
+                ->latest('tanggal_periksa')
+                ->take(5)
+                ->get();
+        }
+
         return view('admin.dashboard', compact(
             'totalUsers',
             'totalPasien',
             'totalDokter',
-            'totalStaff'
+            'totalStaff',
+            'kunjunganHariIni',
+            'penyakitTerbanyak'
         ));
     }
 
@@ -80,5 +106,43 @@ class DashboardController extends Controller
             'totalKunjungan',
             'kunjunganTerakhir'
         ));
+    }
+
+    /**
+     * Fitur Pencarian Cepat Admin
+     */
+    public function search(Request $request)
+    {
+        $query = $request->get('q');
+        
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $users = User::with(['pasien', 'dokter'])
+            ->where('name', 'like', "%{$query}%")
+            ->orWhereHas('pasien', function($q) use ($query) {
+                $q->where('no_rm', 'like', "%{$query}%");
+            })
+            ->limit(5)
+            ->get();
+
+        $results = $users->map(function($user) {
+            $info = ucfirst($user->role);
+            if ($user->role === 'pasien' && $user->pasien) {
+                $info .= ' - ' . $user->pasien->no_rm;
+            } elseif ($user->role === 'dokter' && $user->dokter) {
+                $info .= ' - ' . $user->dokter->spesialis;
+            }
+
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'info' => $info,
+                'url' => route('admin.users.show', $user->id)
+            ];
+        });
+
+        return response()->json($results);
     }
 }

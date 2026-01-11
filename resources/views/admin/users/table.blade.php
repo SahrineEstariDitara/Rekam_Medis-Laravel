@@ -30,10 +30,10 @@
                     <td class="text-muted">{{ $user->email }}</td>
                     
                     @if($type === 'dokter')
-                        <td><span class="badge" style="background-color: #EABDE6; color: #AA60C8;">{{ $user->dokter->spesialis ?? '-' }}</span></td>
+                        <td><span class="badge" style="background-color: #EABDE6; color: #AA60C8;">{{ optional($user->dokter)->spesialis ?? '-' }}</span></td>
                     @elseif($type === 'pasien')
-                        <td><span class="badge" style="background-color: #FFDFEF; color: #AA60C8;">{{ $user->pasien->no_rm ?? '-' }}</span></td>
-                        <td>{{ $user->pasien->jenis_kelamin ?? '-' }}</td>
+                        <td><span class="badge" style="background-color: #FFDFEF; color: #AA60C8;">{{ optional($user->pasien)->no_rm ?? '-' }}</span></td>
+                        <td>{{ optional($user->pasien)->jenis_kelamin ?? '-' }}</td>
                     @endif
                     
                     <td class="pe-4 text-end">

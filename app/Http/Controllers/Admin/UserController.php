@@ -28,9 +28,10 @@ class UserController extends Controller
     /**
      * Form create user
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.users.create');
+        $role = $request->query('role');
+        return view('admin.users.create', compact('role'));
     }
 
     /**
@@ -38,53 +39,64 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // Gunakan nama user sebagai default jika nama_pasien/nama_dokter tidak diisi
+        $request->merge([
+            'nama_pasien' => $request->filled('nama_pasien') ? $request->nama_pasien : $request->name,
+            'nama_dokter' => $request->filled('nama_dokter') ? $request->nama_dokter : $request->name,
+        ]);
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'role' => 'required|in:admin,staff,dokter,pasien',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'tanggal_lahir' => 'required|date',
             
             // Validasi untuk pasien
-            'no_rm' => 'required_if:role,pasien|unique:pasien,no_rm',
-            'nama_pasien' => 'required_if:role,pasien',
-            'jenis_kelamin' => 'required_if:role,pasien|in:Laki-laki,Perempuan',
-            'tanggal_lahir' => 'required_if:role,pasien|date',
-            'alamat' => 'required_if:role,pasien',
+            'no_rm' => 'nullable|required_if:role,pasien|unique:pasien,no_rm',
+            'alamat' => 'nullable|required_if:role,pasien',
             
             // Validasi untuk dokter
-            'nama_dokter' => 'required_if:role,dokter',
-            'spesialis' => 'required_if:role,dokter',
+            'spesialis' => 'nullable|required_if:role,dokter',
         ]);
 
         DB::beginTransaction();
         try {
             // Buat user
-            $user = User::create([
+            $userData = [
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
-            ]);
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tanggal_lahir' => $request->tanggal_lahir,
+            ];
+
+            $user = new User();
+            $user->forceFill($userData)->save();
 
             // Jika role pasien, buat data pasien
             if ($request->role === 'pasien') {
-                Pasien::create([
+                $pasien = new Pasien();
+                $pasien->forceFill([
                     'user_id' => $user->id,
                     'no_rm' => $request->no_rm,
-                    'nama' => $request->nama_pasien,
+                    'nama' => $request->nama_pasien, // Menggunakan hasil merge di atas
                     'jenis_kelamin' => $request->jenis_kelamin,
                     'tanggal_lahir' => $request->tanggal_lahir,
                     'alamat' => $request->alamat,
-                ]);
+                ])->save();
             }
 
             // Jika role dokter, buat data dokter
             if ($request->role === 'dokter') {
-                Dokter::create([
+                $dokter = new Dokter();
+                $dokter->forceFill([
                     'user_id' => $user->id,
-                    'nama' => $request->nama_dokter,
+                    'nama' => $request->nama_dokter, // Menggunakan hasil merge di atas
                     'spesialis' => $request->spesialis,
-                ]);
+                ])->save();
             }
 
             DB::commit();
@@ -93,7 +105,7 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            return back()->with('error', 'Gagal menambahkan user: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal menambahkan user: ' . $e->getMessage());
         }
     }
 
@@ -120,41 +132,62 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        // Gunakan nama user sebagai default jika nama_pasien/nama_dokter tidak diisi
+        $request->merge([
+            'nama_pasien' => $request->nama_pasien ?? $request->name,
+            'nama_dokter' => $request->nama_dokter ?? $request->name,
+        ]);
+
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:8',
-        ]);
+        ];
+
+        // Validasi profil wajib untuk semua role
+        $rules['jenis_kelamin'] = 'required|in:Laki-laki,Perempuan';
+        $rules['tanggal_lahir'] = 'required|date';
+
+        if ($user->role === 'dokter') {
+            $rules['spesialis'] = 'required';
+        }
+        if ($user->role === 'pasien') {
+            $rules['alamat'] = 'required';
+        }
+
+        $request->validate($rules);
 
         DB::beginTransaction();
         try {
             $userData = [
                 'name' => $request->name,
                 'email' => $request->email,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tanggal_lahir' => $request->tanggal_lahir,
             ];
 
             if ($request->filled('password')) {
                 $userData['password'] = Hash::make($request->password);
             }
 
-            $user->update($userData);
+            $user->forceFill($userData)->save();
 
             // Update data pasien jika ada
             if ($user->role === 'pasien' && $user->pasien) {
-                $user->pasien->update([
-                    'nama' => $request->nama_pasien,
+                $user->pasien->forceFill([
+                    'nama' => $request->nama_pasien, // Menggunakan hasil merge
                     'jenis_kelamin' => $request->jenis_kelamin,
                     'tanggal_lahir' => $request->tanggal_lahir,
                     'alamat' => $request->alamat,
-                ]);
+                ])->save();
             }
 
             // Update data dokter jika ada
             if ($user->role === 'dokter' && $user->dokter) {
-                $user->dokter->update([
-                    'nama' => $request->nama_dokter,
+                $user->dokter->forceFill([
+                    'nama' => $request->nama_dokter, // Menggunakan hasil merge
                     'spesialis' => $request->spesialis,
-                ]);
+                ])->save();
             }
 
             DB::commit();
@@ -163,7 +196,7 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            return back()->with('error', 'Gagal mengupdate user: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal mengupdate user: ' . $e->getMessage());
         }
     }
 

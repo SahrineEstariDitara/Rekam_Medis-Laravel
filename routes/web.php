@@ -26,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
     // Admin Routes - Hanya untuk mengelola user
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
+        Route::get('/search', [DashboardController::class, 'search'])->name('search');
         Route::resource('users', UserController::class);
     });
 
@@ -60,4 +61,3 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/', function () {
     return view('welcome');
 });
-
