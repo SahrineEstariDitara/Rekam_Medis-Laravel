@@ -100,6 +100,32 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             color: var(--primary-color);
         }
+        
+        .toggle-container {
+            background-color: #f8f9fa;
+            border-radius: 50px;
+            padding: 5px;
+            display: inline-flex;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        
+        .btn-toggle {
+            border-radius: 50px;
+            padding: 8px 30px;
+            border: none;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: transparent;
+            transition: all 0.3s;
+        }
+        
+        .btn-toggle.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(170, 96, 200, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -128,10 +154,17 @@
                             </div>
                         @endif
                         
-                        <form method="POST" action="{{ route('login') }}">
+                        <div class="text-center">
+                            <div class="toggle-container">
+                                <button type="button" class="btn btn-toggle active" id="btn-umum" onclick="setLoginType('umum')">Umum</button>
+                                <button type="button" class="btn btn-toggle" id="btn-pasien" onclick="setLoginType('pasien')">Pasien</button>
+                            </div>
+                        </div>
+
+                        <form method="POST" action="{{ route('login') }}" id="loginForm">
                             @csrf
                             
-                            <div class="mb-3">
+                            <div class="mb-3" id="email-container">
                                 <label for="email" class="form-label fw-bold small text-muted ps-2">Email</label>
                                 <input type="email" 
                                        class="form-control" 
@@ -141,6 +174,17 @@
                                        placeholder="hello@example.com"
                                        required 
                                        autofocus>
+                            </div>
+
+                            <div class="mb-3" id="rm-container" style="display: none;">
+                                <label for="no_rm" class="form-label fw-bold small text-muted ps-2">No. Rekam Medis</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="no_rm" 
+                                       name="no_rm" 
+                                       value="{{ old('no_rm') }}" 
+                                       placeholder="CTH: RM2026001"
+                                       disabled>
                             </div>
                             
                             <div class="mb-4">
@@ -173,6 +217,53 @@
             </div>
         </div>
     </div>
+    <script>
+        function setLoginType(type) {
+            const btnUmum = document.getElementById('btn-umum');
+            const btnPasien = document.getElementById('btn-pasien');
+            const rmContainer = document.getElementById('rm-container');
+            const rmInput = document.getElementById('no_rm');
+            // Email elements are always visible now, but we track them to be safe if needed
+            const emailContainer = document.getElementById('email-container');
+            const emailInput = document.getElementById('email');
+
+            if (type === 'pasien') {
+                // Mode Pasien: Active RM + Email + Password
+                btnUmum.classList.remove('active');
+                btnPasien.classList.add('active');
+                
+                // Show RM Input
+                rmContainer.style.display = 'block';
+                rmInput.disabled = false;
+                rmInput.required = true;
+                rmInput.focus();
+
+                // Ensure Email is visible and required (it might have been potentially hidden in previous logic)
+                emailContainer.style.display = 'block';
+                emailInput.required = true;
+                
+            } else {
+                // Mode Umum: Only Email + Password
+                btnPasien.classList.remove('active');
+                btnUmum.classList.add('active');
+                
+                // Hide RM Input
+                rmContainer.style.display = 'none';
+                rmInput.disabled = true;
+                rmInput.required = false;
+                
+                // Email is visible
+                emailContainer.style.display = 'block';
+                emailInput.required = true;
+                emailInput.focus();
+            }
+        }
+
+        // Check if there are errors for no_rm to stay on that tab
+        @if($errors->has('no_rm'))
+            setLoginType('pasien');
+        @endif
+    </script>
 </body>
 </html>
 

@@ -29,7 +29,7 @@
                                     <td class="ps-4 py-3 fw-medium">{{ $r->rekamMedis->tanggal_periksa->format('d/m/Y') }}</td>
                                     <td class="py-3">
                                         <div class="d-flex align-items-center">
-                                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                            <div class="bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 35px; height: 35px;">
                                                 <i class="bi bi-capsule"></i>
                                             </div>
                                             {{ $r->obat->nama_obat }}

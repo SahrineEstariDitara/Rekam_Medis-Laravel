@@ -14,15 +14,17 @@
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         <div class="col-md-2 text-center mb-3 mb-md-0">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                <div class="d-flex flex-column lh-1">
-                                    <span class="fs-3 fw-bold">{{ $rm->tanggal_periksa->format('d') }}</span>
-                                    <span class="small text-uppercase fw-bold">{{ $rm->tanggal_periksa->format('M') }}</span>
-                                </div>
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; box-shadow: 0 4px 10px rgba(170, 96, 200, 0.3);">
+                                <i class="bi bi-clipboard2-pulse fs-1"></i>
                             </div>
                         </div>
                         <div class="col-md-7">
-                            <h5 class="fw-bold text-dark mb-1">Pemeriksaan Dokter</h5>
+                            <h5 class="fw-bold text-dark mb-1">
+                                Pemeriksaan Dokter
+                                <small class="text-muted fw-normal ms-2" style="font-size: 0.9rem;">
+                                    <i class="bi bi-calendar3 me-1"></i> {{ $rm->tanggal_periksa->format('d M Y') }}
+                                </small>
+                            </h5>
                             <p class="text-muted mb-2">
                                 <i class="bi bi-person-fill me-1"></i> {{ $rm->dokter->nama }} 
                                 <span class="badge bg-info bg-opacity-10 text-info ms-2">{{ $rm->dokter->spesialis }}</span>
