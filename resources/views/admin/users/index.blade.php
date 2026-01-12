@@ -85,9 +85,7 @@
             <div class="tab-pane fade" id="pasien" role="tabpanel">
                 <div class="d-flex justify-content-between mb-3">
                     <h5>Daftar Pasien</h5>
-                    <a href="{{ route('admin.users.create', ['role' => 'pasien']) }}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus-lg"></i> Tambah Pasien
-                    </a>
+            
                 </div>
                 @include('admin.users.table', ['users' => $pasiens, 'type' => 'pasien'])
             </div>

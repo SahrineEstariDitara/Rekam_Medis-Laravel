@@ -16,6 +16,12 @@ use App\Http\Controllers\Pasien\ResepController as PasienResepController;
 use App\Http\Controllers\Master\ObatController;
 use App\Http\Controllers\PendaftaranController;
 
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
 // Public Pendaftaran Route
 Route::get('/pendaftaran', [PendaftaranController::class, 'create'])->name('pendaftaran.create');
 Route::post('/pendaftaran', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
@@ -23,51 +29,94 @@ Route::post('/pendaftaran', [PendaftaranController::class, 'store'])->name('pend
 // Auth Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Protected Routes
+// Landing
+Route::get('/', function () {
+    return view('welcome');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Protected Routes (HARUS LOGIN)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])->group(function () {
-    
-    // Admin Routes - Hanya untuk mengelola user
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES
+    |--------------------------------------------------------------------------
+    | Fokus: manajemen user & sistem
+    */
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
         Route::get('/search', [DashboardController::class, 'search'])->name('search');
         Route::resource('users', UserController::class);
-        // Admin Pendaftaran (Uses Staff Controller logic)
+
+        // Admin boleh melakukan pendaftaran pasien
+        // (pakai logic StaffPasienController)
         Route::resource('pendaftaran', StaffPasienController::class)->only(['create', 'store']);
     });
 
-    // Staff Routes - Untuk mengelola rekam medis dan obat
-    Route::middleware(['role:staff'])->prefix('staff')->name('staff.')->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF ROUTES
+    |--------------------------------------------------------------------------
+    | ⚠️ DIUBAH: sekarang STAFF + ADMIN boleh akses
+    */
+    Route::middleware(['role:staff,admin'])->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'staffDashboard'])->name('dashboard');
-        Route::resource('rekam-medis', StaffRekamMedisController::class)->parameters(['rekam-medis' => 'rekamMedis']);
+
+        Route::resource('rekam-medis', StaffRekamMedisController::class)
+            ->parameters(['rekam-medis' => 'rekamMedis']);
+
         Route::resource('obat', ObatController::class);
         Route::resource('pasien', StaffPasienController::class);
         Route::resource('dokter', StaffDokterController::class);
     });
 
-    // Dokter Routes
+    /*
+    |--------------------------------------------------------------------------
+    | DOKTER ROUTES
+    |--------------------------------------------------------------------------
+    */
     Route::middleware(['role:dokter'])->prefix('dokter')->name('dokter.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'dokterDashboard'])->name('dashboard');
+
         Route::resource('pasien', PasienController::class)->only(['index', 'show']);
         Route::resource('rekam-medis', DokterRekamMedisController::class);
-        Route::get('resep/create/{rekamMedisId}', [DokterResepController::class, 'create'])->name('resep.create');
-        Route::post('resep', [DokterResepController::class, 'store'])->name('resep.store');
-        Route::delete('resep/{resep}', [DokterResepController::class, 'destroy'])->name('resep.destroy');
-        Route::get('obat', [ObatController::class, 'indexForDokter'])->name('obat.index');
+
+        Route::get('resep/create/{rekamMedisId}', [DokterResepController::class, 'create'])
+            ->name('resep.create');
+
+        Route::post('resep', [DokterResepController::class, 'store'])
+            ->name('resep.store');
+
+        Route::delete('resep/{resep}', [DokterResepController::class, 'destroy'])
+            ->name('resep.destroy');
+
+        Route::get('obat', [ObatController::class, 'indexForDokter'])
+            ->name('obat.index');
     });
 
-    // Pasien Routes
+    /*
+    |--------------------------------------------------------------------------
+    | PASIEN ROUTES
+    |--------------------------------------------------------------------------
+    */
     Route::middleware(['role:pasien'])->prefix('pasien')->name('pasien.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'pasienDashboard'])->name('dashboard');
+
         Route::get('profil', [ProfilController::class, 'index'])->name('profil.index');
-        Route::get('rekam-medis/{rekamMedi}/download', [PasienRekamMedisController::class, 'download'])->name('rekam-medis.download');
-        Route::resource('rekam-medis', PasienRekamMedisController::class)->only(['index', 'show']);
+
+        Route::get('rekam-medis/{rekamMedi}/download',
+            [PasienRekamMedisController::class, 'download']
+        )->name('rekam-medis.download');
+
+        Route::resource('rekam-medis', PasienRekamMedisController::class)
+            ->only(['index', 'show']);
+
         Route::get('resep', [PasienResepController::class, 'index'])->name('resep.index');
     });
-});
-
-Route::get('/', function () {
-    return view('welcome');
 });
