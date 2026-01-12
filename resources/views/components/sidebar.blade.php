@@ -8,11 +8,6 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ Request::is('admin/pendaftaran*') ? 'active' : '' }}" href="{{ route('admin.pendaftaran.create') }}">
-                        <i class="bi bi-person-plus"></i> Pendaftaran Pasien
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                         <i class="bi bi-people"></i> Kelola User
                     </a>
